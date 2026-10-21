@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tensor-console-backend
+    environment:
+      - DEBUG=true
+      - ENVIRONMENT=development
+      - DATABASE_URL=sqlite+aiosqlite:///./tensor_console.db
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=tensor-console
+      - KEYCLOAK_CLIENT_ID=tensor-console-backend
+      - FRONTEND_URL=http://localhost:5173
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - backend-data:/app/data
+    depends_on:
+      - keycloak
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/api/v1/health', timeout=5).raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tensor-console-frontend
+    ports:
+      - "127.0.0.1:5173:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: tensor-console-keycloak
+    command: start-dev --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=dev-file
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health/ready"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 5
+
+volumes:
+  backend-data:
+  keycloak-data:
