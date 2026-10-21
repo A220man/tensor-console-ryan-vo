@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "current_feature": "skeleton",
+  "features": [
+    {
+      "id": "skeleton",
+      "title": "FastAPI/React skeleton with Docker Compose",
+      "status": "done",
+      "acceptance": [
+        "FastAPI app runs with health endpoint",
+        "React + TypeScript + Vite frontend builds",
+        "Docker Compose starts backend, frontend, Keycloak",
+        "Backend tests pass (pytest)",
+        "Frontend typecheck and tests pass"
+      ],
+      "implementation": [
+        "backend/app/main.py",
+        "backend/app/core/config.py",
+        "backend/app/api/health.py",
+        "backend/requirements.txt",
+        "backend/tests/test_health.py",
+        "frontend/package.json",
+        "frontend/vite.config.ts",
+        "frontend/src/main.tsx",
+        "frontend/src/App.tsx",
+        "frontend/src/api/client.ts",
+        "frontend/tests/App.test.tsx",
+        "docker-compose.yml",
+        "backend/Dockerfile",
+        "frontend/Dockerfile"
+      ],
+      "tests": [
+        "backend/tests/test_health.py",
+        "frontend/tests/App.test.tsx"
+      ]
+    },
+    {
+      "id": "bedrock-region-resolver",
+      "title": "Bedrock cross-region inference profile resolver",
+      "status": "done",
+      "acceptance": [
+        "Maps AWS regions to correct geographic prefix (us/eu/au/apac)",
+        "Resolves foundation model IDs to invokeable inference profile IDs per region",
+        "Handles AU region (ap-southeast-2) → au.anthropic.* profiles",
+        "Unit tests cover all region mappings and model resolution"
+      ],
+      "implementation": [
+        "backend/app/models/bedrock.py",
+        "backend/app/services/bedrock_resolver.py",
+        "backend/app/api/bedrock.py",
+        "backend/tests/test_bedrock_resolver.py"
+      ],
+      "tests": [
+        "backend/tests/test_bedrock_resolver.py"
+      ]
+    },
+    {
+      "id": "bootstrap-token-refresh",
+      "title": "Bootstrap endpoint with token refresh handling",
+      "status": "done",
+      "acceptance": [
+        "Bootstrap endpoint validates Azure AD token via fastapi_azure_auth",
+        "Returns gateway_token and bootstrap_expires_at",
+        "Client-side token refresh logic documented",
+        "Integration test covers expired token rejection"
+      ],
+      "implementation": [
+        "backend/app/api/bootstrap.py",
+        "backend/tests/test_bootstrap.py"
+      ],
+      "tests": [
+        "backend/tests/test_bootstrap.py"
+      ]
+    },
+    {
+      "id": "plugin-hooks-validator",
+      "title": "Plugin hooks.json schema validator",
+      "status": "done",
+      "acceptance": [
+        "Validates hooks.json against correct schema ({\"hooks\": {}})",
+        "Rejects bare array [] with clear error message",
+        "CLI command to validate all plugin hooks.json files",
+        "Pre-commit hook integration"
+      ],
+      "implementation": [
+        "scripts/validate-hooks.py",
+        "backend/tests/test_plugin_validator.py"
+      ],
+      "tests": [
+        "backend/tests/test_plugin_validator.py"
+      ]
+    },
+    {
+      "id": "mcp-json-validator",
+      "title": "MCP JSON configuration validator",
+      "status": "done",
+      "acceptance": [
+        "Validates .mcp.json files for syntax and structure",
+        "Detects missing commas, unclosed braces",
+        "CLI command validates all .mcp.json in plugin directories",
+        "CI integration"
+      ],
+      "implementation": [
+        "scripts/validate-mcp.py",
+        "backend/tests/test_plugin_validator.py"
+      ],
+      "tests": [
+        "backend/tests/test_plugin_validator.py"
+      ]
+    },
+    {
+      "id": "frontend-dashboard",
+      "title": "React dashboard with Bedrock region configuration",
+      "status": "done",
+      "acceptance": [
+        "Dashboard shows Bedrock region selector",
+        "Displays resolved inference profile prefix for selected region",
+        "Shows model invocation test results",
+        "Loading/error/empty states"
+      ],
+      "implementation": [
+        "frontend/src/components/BedrockRegionSelector.tsx",
+        "frontend/src/pages/Dashboard.tsx",
+        "frontend/tests/App.test.tsx"
+      ],
+      "tests": [
+        "frontend/tests/App.test.tsx"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "tensor-console-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: tensor-console-ryan-vo",
+  "workflows": [
+    "Select AWS region and resolve correct geographic prefix (us/eu/au/apac) for Bedrock inference profiles",
+    "Convert foundation model IDs to region-appropriate invokeable inference profile identifiers",
+    "Validate plugin configuration files (hooks.json, .mcp.json) for common schema and syntax errors"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
