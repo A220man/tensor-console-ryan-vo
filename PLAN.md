@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-skeleton
+bedrock-version-preservation
 
 ## Roadmap
 
@@ -92,4 +92,18 @@ Acceptance:
 Implementation: `frontend/src/components/BedrockRegionSelector.tsx`, `frontend/src/pages/Dashboard.tsx`, `frontend/tests/App.test.tsx`
 
 Tests: `frontend/tests/App.test.tsx`
+
+### bedrock-version-preservation — Bedrock inference profile version preservation and caching
+
+Status: done
+
+Acceptance:
+- Preserves Bedrock model version suffixes (v1:0, v2:0) in inference profile resolution
+- Handles date-suffixed model IDs (e.g., claude-3-opus-20240229-v1:0)
+- LRU caching on model extraction for repeated resolutions
+- Unit tests cover version preservation and caching behavior
+
+Implementation: `backend/app/services/bedrock_resolver.py`, `backend/tests/test_bedrock_resolver.py`
+
+Tests: `backend/tests/test_bedrock_resolver.py`
 

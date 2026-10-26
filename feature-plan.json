@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "skeleton",
+  "current_feature": "bedrock-version-preservation",
   "features": [
     {
       "id": "skeleton",
@@ -125,6 +125,24 @@
       ],
       "tests": [
         "frontend/tests/App.test.tsx"
+      ]
+    },
+    {
+      "id": "bedrock-version-preservation",
+      "title": "Bedrock inference profile version preservation and caching",
+      "status": "done",
+      "acceptance": [
+        "Preserves Bedrock model version suffixes (v1:0, v2:0) in inference profile resolution",
+        "Handles date-suffixed model IDs (e.g., claude-3-opus-20240229-v1:0)",
+        "LRU caching on model extraction for repeated resolutions",
+        "Unit tests cover version preservation and caching behavior"
+      ],
+      "implementation": [
+        "backend/app/services/bedrock_resolver.py",
+        "backend/tests/test_bedrock_resolver.py"
+      ],
+      "tests": [
+        "backend/tests/test_bedrock_resolver.py"
       ]
     }
   ]

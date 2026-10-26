@@ -35,3 +35,4 @@ dist/
 # Agent metadata
 .antigravitycli/
 .omp/
+venv/

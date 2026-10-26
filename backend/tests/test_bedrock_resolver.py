@@ -46,35 +46,52 @@ class TestInferenceProfileResolution:
         resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
         assert resolved.startswith("au.anthropic.")
         assert "claude-3-5-sonnet" in resolved
+        assert resolved.endswith(":0"), "Version suffix should be preserved"
 
     def test_eu_region_resolves_to_eu_profile(self):
         model_id = "anthropic.claude-3-opus-20240229-v1:0"
         resolved = service.resolve_inference_profile("eu-west-1", model_id)
         assert resolved.startswith("eu.anthropic.")
         assert "claude-3-opus" in resolved
+        assert resolved.endswith(":0"), "Version suffix should be preserved"
 
     def test_us_region_resolves_to_us_profile(self):
         model_id = "anthropic.claude-3-haiku-20240307-v1:0"
         resolved = service.resolve_inference_profile("us-east-1", model_id)
         assert resolved.startswith("us.anthropic.")
         assert "claude-3-haiku" in resolved
+        assert resolved.endswith(":0"), "Version suffix should be preserved"
 
     def test_apac_region_resolves_to_apac_profile(self):
         model_id = "anthropic.claude-sonnet-4-20250514-v1:0"
         resolved = service.resolve_inference_profile("ap-northeast-1", model_id)
         assert resolved.startswith("apac.anthropic.")
         assert "claude-sonnet-4" in resolved
+        assert resolved.endswith(":0"), "Version suffix should be preserved"
 
     def test_unknown_model_falls_back_to_extracted_name(self):
         model_id = "anthropic.unknown-model-123:0"
         resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
-        assert resolved == "au.anthropic.unknown-model-123"
+        assert resolved == "au.anthropic.unknown-model-123:0", "Version should be preserved for unknown models too"
 
     def test_model_id_without_provider_prefix(self):
         model_id = "claude-3-5-sonnet-20241022-v2:0"
         resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
         assert resolved.startswith("au.anthropic.")
         assert "claude-3-5-sonnet" in resolved
+        assert resolved.endswith(":0"), "Version suffix should be preserved"
+
+    def test_version_preservation_v1(self):
+        """Test that v1:0 version format is preserved."""
+        model_id = "anthropic.claude-3-opus-20240229-v1:0"
+        resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
+        assert resolved == "au.anthropic.claude-3-opus:v1:0"
+
+    def test_version_preservation_v2(self):
+        """Test that v2:0 version format is preserved."""
+        model_id = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+        resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
+        assert resolved == "au.anthropic.claude-3-5-sonnet:v2:0"
 
 
 class TestRegionMapCompleteness:
@@ -103,6 +120,7 @@ class TestResolveModelAPI:
         result = service.resolve_model("ap-southeast-2", "anthropic.claude-3-5-sonnet-20241022-v2:0")
         assert result.is_inference_profile is True
         assert result.resolved_model.startswith("au.anthropic.")
+        assert result.resolved_model.endswith(":0")
         assert result.prefix_used == "au"
 
     def test_us_region_returns_foundation_model(self):

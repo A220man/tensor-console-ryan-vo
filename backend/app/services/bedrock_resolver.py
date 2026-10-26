@@ -1,5 +1,7 @@
 """Bedrock region resolver service."""
 
+from functools import lru_cache
+import re
 from app.models.bedrock import (
     REGION_PREFIX_MAP,
     ANTHROPIC_MODELS,
@@ -33,16 +35,39 @@ class BedrockResolverService:
             inference_profile_prefix=f"{prefix.value}.anthropic",
         )
 
-    def resolve_inference_profile(self, region: str, foundation_model_id: str) -> str:
-        """Resolve foundation model ID to invokeable inference profile ID."""
-        prefix = self.get_region_prefix(region)
-
+    @lru_cache(maxsize=256)
+    def _extract_base_model(self, foundation_model_id: str) -> tuple[str, str | None]:
+        """Extract base model name and version from foundation model ID.
+        
+        Returns (base_model, version) where version includes the full version suffix
+        e.g., "anthropic.claude-3-5-sonnet-20241022-v2:0" -> ("claude-3-5-sonnet", "v2:0")
+        """
         model_name = foundation_model_id
-        if "." in foundation_model_id:
-            model_name = foundation_model_id.split(".", 1)[1]
-        if ":" in model_name:
-            model_name = model_name.split(":", 1)[0]
-
+        version = None
+        
+        # Remove provider prefix (e.g., "anthropic.")
+        if "." in model_name:
+            model_name = model_name.split(".", 1)[1]
+        
+        # Extract version suffix (e.g., "v1:0", "v2:0") - pattern is v<number>:<number> at end
+        version_match = re.search(r'(v\d+:\d+)$', model_name)
+        if version_match:
+            version = version_match.group(1)
+            model_name = model_name[:version_match.start()].rstrip('-')
+        elif ":" in model_name:
+            # Fallback: just take everything after the last colon
+            parts = model_name.split(":")
+            version = parts[-1]
+            model_name = ":".join(parts[:-1]).rstrip('-')
+            if version.isdigit():
+                version = f":{version}"
+            else:
+                version = f":{version}"
+        
+        # Remove date suffix if present (e.g., -20240229, -20241022, -20250514)
+        model_name = re.sub(r'-\d{8}$', '', model_name)
+        
+        # Extract base model from known list (after cleaning)
         base_model = None
         for known in ANTHROPIC_MODELS:
             if known in model_name.lower():
@@ -51,8 +76,21 @@ class BedrockResolverService:
 
         if not base_model:
             base_model = model_name
+            
+        return base_model, version
 
-        return f"{prefix.value}.anthropic.{base_model}"
+    def resolve_inference_profile(self, region: str, foundation_model_id: str) -> str:
+        """Resolve foundation model ID to invokeable inference profile ID."""
+        prefix = self.get_region_prefix(region)
+
+        base_model, version = self._extract_base_model(foundation_model_id)
+
+        profile = f"{prefix.value}.anthropic.{base_model}"
+        if version:
+            # Version already includes prefix like 'v1:0' or ':0', add separator
+            profile += version if version.startswith(':') else f":{version}"
+            
+        return profile
 
     def resolve_model(self, region: str, foundation_model_id: str) -> ModelResolveResponse:
         """Resolve foundation model to invokeable identifier for region."""

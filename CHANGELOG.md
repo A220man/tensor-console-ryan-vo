@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.0.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -35,6 +39,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No hardcoded credentials
 
 ## [Unreleased]
+
+### Added (this checkpoint)
+- Bedrock inference profile version preservation: extracts and preserves `v1:0`, `v2:0` version suffixes
+- Date suffix handling: strips `-20240229`, `-20241022`, `-20250514` date patterns from model IDs
+- LRU caching (maxsize=256) on model extraction for repeated inference profile resolutions
+- New unit tests: `test_version_preservation_v1`, `test_version_preservation_v2`
 
 ### Planned
 - Database models and persistence layer
