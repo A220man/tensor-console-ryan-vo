@@ -55,14 +55,13 @@ class BedrockResolverService:
             version = version_match.group(1)
             model_name = model_name[:version_match.start()].rstrip('-')
         elif ":" in model_name:
-            # Fallback: just take everything after the last colon
+            # Fallback: check if the part after the last colon looks like a version
             parts = model_name.split(":")
-            version = parts[-1]
-            model_name = ":".join(parts[:-1]).rstrip('-')
-            if version.isdigit():
-                version = f":{version}"
-            else:
-                version = f":{version}"
+            potential_version = parts[-1]
+            if potential_version and (potential_version.isdigit() or re.match(r'^v\d+:\d+$', potential_version)):
+                version = potential_version if potential_version.startswith('v') else f":{potential_version}"
+                model_name = ":".join(parts[:-1]).rstrip('-')
+            # Otherwise, treat the colon as part of the model name (not a version separator)
         
         # Remove date suffix if present (e.g., -20240229, -20241022, -20250514)
         model_name = re.sub(r'-\d{8}$', '', model_name)

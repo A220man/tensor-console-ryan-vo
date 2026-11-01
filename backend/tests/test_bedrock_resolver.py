@@ -93,6 +93,30 @@ class TestInferenceProfileResolution:
         resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
         assert resolved == "au.anthropic.claude-3-5-sonnet:v2:0"
 
+    def test_trailing_colon_no_version(self):
+        """Test that trailing colon without version doesn't add empty version."""
+        model_id = "anthropic.claude-3-5-sonnet:"
+        resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
+        assert resolved == "au.anthropic.claude-3-5-sonnet", "Should not add empty version suffix"
+
+    def test_multiple_colons_ignores_invalid_version(self):
+        """Test that extra colons with non-version content are ignored."""
+        model_id = "anthropic.claude-3-5-sonnet:v2:0:extra"
+        resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
+        assert resolved == "au.anthropic.claude-3-5-sonnet", "Should ignore non-standard version suffix"
+
+    def test_colon_with_numeric_version(self):
+        """Test that :N version format is handled (legacy format)."""
+        model_id = "anthropic.claude-3-5-sonnet:0"
+        resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
+        assert resolved == "au.anthropic.claude-3-5-sonnet:0", "Numeric version after colon should be preserved"
+
+    def test_model_without_version_or_colon(self):
+        """Test model ID without any version or colon."""
+        model_id = "anthropic.claude-3-5-sonnet"
+        resolved = service.resolve_inference_profile("ap-southeast-2", model_id)
+        assert resolved == "au.anthropic.claude-3-5-sonnet", "Should work without version"
+
 
 class TestRegionMapCompleteness:
     """Test region map covers all major AWS regions."""
