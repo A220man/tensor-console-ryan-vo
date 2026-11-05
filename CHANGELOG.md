@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.2.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -49,6 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Date suffix handling: strips `-20240229`, `-20241022`, `-20250514` date patterns from model IDs
 - LRU caching (maxsize=256) on model extraction for repeated inference profile resolutions
 - New unit tests: `test_version_preservation_v1`, `test_version_preservation_v2`
+
+### Added (this round)
+- LRU caching validation tests: `test_extract_base_model_cache_hit`, `test_extract_base_model_cache_different_inputs`, `test_resolve_inference_profile_uses_cache`, `test_cache_maxsize_respected`
 
 ### Planned
 - Database models and persistence layer

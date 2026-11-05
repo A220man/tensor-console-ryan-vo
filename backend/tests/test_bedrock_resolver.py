@@ -167,3 +167,82 @@ class TestResolveModelAPI:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+import time
+
+class TestLRUCaching:
+    """Test LRU caching behavior on model extraction."""
+
+    def test_extract_base_model_cache_hit(self):
+        """Test that repeated calls with same model ID use cache."""
+        model_id = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+        
+        # Clear cache first
+        service._extract_base_model.cache_clear()
+        
+        # First call - cache miss
+        result1 = service._extract_base_model(model_id)
+        cache_info_after_first = service._extract_base_model.cache_info()
+        
+        # Second call - should hit cache
+        result2 = service._extract_base_model(model_id)
+        cache_info_after_second = service._extract_base_model.cache_info()
+        
+        assert result1 == result2 == ("claude-3-5-sonnet", "v2:0")
+        # Cache hit should increment hits counter
+        assert cache_info_after_second.hits == cache_info_after_first.hits + 1
+        assert cache_info_after_second.misses == cache_info_after_first.misses
+
+    def test_extract_base_model_cache_different_inputs(self):
+        """Test that different model IDs produce different cache entries."""
+        model_ids = [
+            "anthropic.claude-3-opus-20240229-v1:0",
+            "anthropic.claude-3-5-sonnet-20241022-v2:0",
+            "anthropic.claude-3-haiku-20240307-v1:0",
+        ]
+        
+        results = [service._extract_base_model(mid) for mid in model_ids]
+        
+        assert results[0] == ("claude-3-opus", "v1:0")
+        assert results[1] == ("claude-3-5-sonnet", "v2:0")
+        assert results[2] == ("claude-3-haiku", "v1:0")
+        
+        # Repeated calls should all hit cache
+        for mid, expected in zip(model_ids, results):
+            assert service._extract_base_model(mid) == expected
+
+    def test_resolve_inference_profile_uses_cache(self):
+        """Test that resolve_inference_profile benefits from cached extraction."""
+        region = "ap-southeast-2"
+        model_id = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+        
+        # First resolution - cache miss on extraction
+        start = time.perf_counter()
+        result1 = service.resolve_inference_profile(region, model_id)
+        first_time = time.perf_counter() - start
+        
+        # Second resolution - should hit extraction cache
+        start = time.perf_counter()
+        result2 = service.resolve_inference_profile(region, model_id)
+        second_time = time.perf_counter() - start
+        
+        assert result1 == result2 == "au.anthropic.claude-3-5-sonnet:v2:0"
+        # Second call should be faster due to cache
+        assert second_time < first_time / 2, "Cached resolution should be faster"
+
+    def test_cache_maxsize_respected(self):
+        """Test that cache respects maxsize limit (256 entries)."""
+        # Clear any existing cache
+        service._extract_base_model.cache_clear()
+        
+        # Generate 300 unique model IDs (exceeds maxsize=256)
+        model_ids = [f"anthropic.custom-model-{i}:0" for i in range(300)]
+        
+        for mid in model_ids:
+            service._extract_base_model(mid)
+        
+        # Cache info should show max 256 entries
+        cache_info = service._extract_base_model.cache_info()
+        assert cache_info.currsize <= 256
+        assert cache_info.maxsize == 256
+    pytest.main([__file__, "-v"])
