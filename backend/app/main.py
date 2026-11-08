@@ -3,15 +3,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api import health, bootstrap, bedrock
-
+from app.core.database import init_db, close_db
+from app.api import health, bootstrap, bedrock, database
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    await init_db()
     yield
     # Shutdown
-
+    await close_db()
 
 app = FastAPI(
     title=settings.app_name,
@@ -32,3 +33,4 @@ app.add_middleware(
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
 app.include_router(bootstrap.router, prefix="/api/v1/bootstrap", tags=["bootstrap"])
 app.include_router(bedrock.router, prefix="/api/v1/bedrock", tags=["bedrock"])
+app.include_router(database.router, prefix="/api/v1", tags=["database"])
