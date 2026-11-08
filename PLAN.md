@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-bedrock-version-preservation
+database-persistence-layer
 
 ## Roadmap
 
@@ -106,4 +106,18 @@ Acceptance:
 Implementation: `backend/app/services/bedrock_resolver.py`, `backend/tests/test_bedrock_resolver.py`
 
 Tests: `backend/tests/test_bedrock_resolver.py`
+
+### database-persistence-layer — SQLAlchemy database models and persistence layer
+
+Status: done
+
+Acceptance:
+- SQLAlchemy async models for ResolutionHistory, PluginValidationLog, AuditLog
+- Database initialization and session management
+- API endpoints for saving/querying resolution history, plugin validations, audit logs
+- Unit tests cover all models and service operations
+
+Implementation: `backend/app/models/database.py`, `backend/app/core/database.py`, `backend/app/services/database_service.py`, `backend/app/api/database.py`, `backend/tests/test_database.py`
+
+Tests: `backend/tests/test_database.py`
 

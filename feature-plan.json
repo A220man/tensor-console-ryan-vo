@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "bedrock-version-preservation",
+  "current_feature": "database-persistence-layer",
   "features": [
     {
       "id": "skeleton",
@@ -143,6 +143,27 @@
       ],
       "tests": [
         "backend/tests/test_bedrock_resolver.py"
+      ]
+    },
+    {
+      "id": "database-persistence-layer",
+      "title": "SQLAlchemy database models and persistence layer",
+      "status": "done",
+      "acceptance": [
+        "SQLAlchemy async models for ResolutionHistory, PluginValidationLog, AuditLog",
+        "Database initialization and session management",
+        "API endpoints for saving/querying resolution history, plugin validations, audit logs",
+        "Unit tests cover all models and service operations"
+      ],
+      "implementation": [
+        "backend/app/models/database.py",
+        "backend/app/core/database.py",
+        "backend/app/services/database_service.py",
+        "backend/app/api/database.py",
+        "backend/tests/test_database.py"
+      ],
+      "tests": [
+        "backend/tests/test_database.py"
       ]
     }
   ]
