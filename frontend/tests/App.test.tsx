@@ -34,6 +34,10 @@ const mockBedrockAPIs = () => {
         inference_profile_prefix: 'us.anthropic',
       }),
     })
+    .mockResolvedValueOnce({ // resolution-history
+      ok: true,
+      json: async () => [],
+    })
 }
 
 describe('Dashboard', () => {

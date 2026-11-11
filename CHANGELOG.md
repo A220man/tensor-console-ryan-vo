@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.4.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -67,6 +71,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DatabaseService for CRUD operations on all models
 - REST API endpoints under `/api/v1/database/*` for history and audit queries
 - Unit tests for all models and service operations (10 tests)
+
+### Added (resolution history integration)
+- POST `/api/v1/bedrock/resolve-model` now persists resolutions to database
+- Frontend Dashboard shows Resolution History section with persisted entries
+- History table displays: timestamp, region, requested model, resolved model, type (profile/on-demand), prefix
+- History auto-refreshes after new model resolutions
+- New API client function: `fetchResolutionHistory`
+- New frontend component: `ResolutionHistory`
+- Unit tests updated to mock database API calls
 
 ### Planned
 - Audit logging for configuration changes

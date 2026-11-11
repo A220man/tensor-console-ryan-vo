@@ -1,4 +1,5 @@
 import { BedrockRegionSelector } from '../components/BedrockRegionSelector'
+import { ResolutionHistory } from '../components/ResolutionHistory'
 import { checkHealth } from '../api/client'
 import { useEffect, useState } from 'react'
 
@@ -13,6 +14,7 @@ interface RegionInfo {
 export function Dashboard() {
   const [healthy, setHealthy] = useState<boolean | null>(null)
   const [healthError, setHealthError] = useState<string | null>(null)
+  const [resolveTrigger, setResolveTrigger] = useState(0)
 
   useEffect(() => {
     checkHealth()
@@ -29,6 +31,8 @@ export function Dashboard() {
 
   const handleModelResolve = (resolvedModel: string, isProfile: boolean) => {
     console.log('Model resolved:', resolvedModel, isProfile)
+    // Trigger history refresh
+    setResolveTrigger((prev) => prev + 1)
   }
 
   return (
@@ -49,6 +53,10 @@ export function Dashboard() {
             onRegionChange={handleRegionChange}
             onModelResolve={handleModelResolve}
           />
+        </section>
+
+        <section style={styles.section}>
+          <ResolutionHistory onResolve={resolveTrigger > 0 ? () => {} : undefined} />
         </section>
 
         <section style={styles.section}>

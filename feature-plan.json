@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "database-persistence-layer",
+  "current_feature": "resolution-history-integration",
   "features": [
     {
       "id": "skeleton",
@@ -164,6 +164,29 @@
       ],
       "tests": [
         "backend/tests/test_database.py"
+      ]
+    },
+    {
+      "id": "resolution-history-integration",
+      "title": "Resolution History Integration - Database persistence and frontend view",
+      "status": "done",
+      "acceptance": [
+        "POST /bedrock/resolve-model saves resolution to database",
+        "Frontend Dashboard shows Resolution History section with persisted entries",
+        "History shows region, requested model, resolved model, profile flag, timestamp",
+        "History loads on Dashboard mount and refreshes after new resolutions"
+      ],
+      "implementation": [
+        "backend/app/api/bedrock.py",
+        "backend/app/services/database_service.py",
+        "backend/app/core/database.py",
+        "frontend/src/api/client.ts",
+        "frontend/src/components/ResolutionHistory.tsx",
+        "frontend/src/pages/Dashboard.tsx"
+      ],
+      "tests": [
+        "backend/tests/test_database.py",
+        "frontend/tests/App.test.tsx"
       ]
     }
   ]
