@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-database-persistence-layer
+resolution-history-integration
 
 ## Roadmap
 
@@ -120,4 +120,18 @@ Acceptance:
 Implementation: `backend/app/models/database.py`, `backend/app/core/database.py`, `backend/app/services/database_service.py`, `backend/app/api/database.py`, `backend/tests/test_database.py`
 
 Tests: `backend/tests/test_database.py`
+
+### resolution-history-integration — Resolution History Integration - Database persistence and frontend view
+
+Status: done
+
+Acceptance:
+- POST /bedrock/resolve-model saves resolution to database
+- Frontend Dashboard shows Resolution History section with persisted entries
+- History shows region, requested model, resolved model, profile flag, timestamp
+- History loads on Dashboard mount and refreshes after new resolutions
+
+Implementation: `backend/app/api/bedrock.py`, `backend/app/services/database_service.py`, `backend/app/core/database.py`, `frontend/src/api/client.ts`, `frontend/src/components/ResolutionHistory.tsx`, `frontend/src/pages/Dashboard.tsx`
+
+Tests: `backend/tests/test_database.py`, `frontend/tests/App.test.tsx`
 

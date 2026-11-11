@@ -16,6 +16,16 @@ export interface ModelResolveResponse {
   prefix_used: string
 }
 
+export interface ResolutionHistoryEntry {
+  id: number
+  region: string
+  requested_model: string
+  resolved_model: string
+  is_inference_profile: boolean
+  prefix_used: string
+  created_at: string
+}
+
 export interface RegionMap {
   [region: string]: string
 }
@@ -60,6 +70,22 @@ export async function fetchSupportedModels(): Promise<string[]> {
   const response = await fetch(`${API_BASE}/bedrock/supported-models`)
   if (!response.ok) {
     throw new Error(`Failed to fetch supported models: ${response.statusText}`)
+  }
+  return response.json()
+}
+
+export async function fetchResolutionHistory(
+  region?: string,
+  limit = 50,
+  offset = 0
+): Promise<ResolutionHistoryEntry[]> {
+  const params = new URLSearchParams()
+  if (region) params.append('region', region)
+  params.append('limit', limit.toString())
+  params.append('offset', offset.toString())
+  const response = await fetch(`${API_BASE}/database/resolution-history?${params.toString()}`)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch resolution history: ${response.statusText}`)
   }
   return response.json()
 }

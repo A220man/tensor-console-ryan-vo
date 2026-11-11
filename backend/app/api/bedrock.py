@@ -1,10 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.bedrock_resolver import BedrockResolverService
 from app.models.bedrock import (
     RegionInfo,
     ModelResolveRequest,
     ModelResolveResponse,
 )
+from app.core.database import get_db
+from app.services.database_service import DatabaseService
 
 router = APIRouter()
 service = BedrockResolverService()
@@ -17,9 +20,24 @@ async def region_info(region: str) -> RegionInfo:
 
 
 @router.post("/resolve-model", response_model=ModelResolveResponse)
-async def resolve_model(request: ModelResolveRequest) -> ModelResolveResponse:
+async def resolve_model(
+    request: ModelResolveRequest,
+    db: AsyncSession = Depends(get_db)
+) -> ModelResolveResponse:
     """Resolve foundation model to invokeable identifier for region."""
-    return service.resolve_model(request.region, request.model)
+    response = service.resolve_model(request.region, request.model)
+
+    # Save resolution to history
+    db_service = DatabaseService(db)
+    await db_service.save_resolution(
+        region=request.region,
+        requested_model=request.model,
+        resolved_model=response.resolved_model,
+        is_inference_profile=response.is_inference_profile,
+        prefix_used=response.prefix_used,
+    )
+
+    return response
 
 
 @router.get("/region-map")
