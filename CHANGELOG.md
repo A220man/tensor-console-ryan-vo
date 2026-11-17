@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.5.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -65,7 +69,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added (this round)
 - LRU caching validation tests: `test_extract_base_model_cache_hit`, `test_extract_base_model_cache_different_inputs`, `test_resolve_inference_profile_uses_cache`, `test_cache_maxsize_respected`
 
-### Added (database persistence layer)
+
+
+### Added (this round)
+- Enhanced `_extract_base_model` in `backend/app/services/bedrock_resolver.py` to support version suffixes `vN` format (e.g., `v1`, `v2`) in addition to existing `vN:0` format
+- Added targeted test cases `test_extract_base_model_v1_no_suffix` and `test_extract_base_model_v2_no_suffix` for new version format extraction### Added (database persistence layer)
 - SQLAlchemy async database models: ResolutionHistory, PluginValidationLog, AuditLog
 - Database initialization and session management with lifespan handlers
 - DatabaseService for CRUD operations on all models
