@@ -50,7 +50,7 @@ class BedrockResolverService:
             model_name = model_name.split(".", 1)[1]
         
         # Extract version suffix (e.g., "v1:0", "v2:0") - pattern is v<number>:<number> at end
-        version_match = re.search(r'(v\d+:\d+)$', model_name)
+        version_match = re.search(r'(v\d+(?::\d+)?)$', model_name)
         if version_match:
             version = version_match.group(1)
             model_name = model_name[:version_match.start()].rstrip('-')
