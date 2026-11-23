@@ -246,3 +246,18 @@ class TestLRUCaching:
         assert cache_info.currsize <= 256
         assert cache_info.maxsize == 256
     pytest.main([__file__, "-v"])
+
+
+    def test_extract_base_model_v1_no_suffix(self):
+        """Test that v1 format (without :0 suffix) is extracted correctly."""
+        model_id = "anthropic.claude-3-opus-20240229-v1"
+        base_model, version = service._extract_base_model(model_id)
+        assert base_model == "claude-3-opus", f"Expected claude-3-opus, got {base_model}"
+        assert version == "v1", f"Expected v1, got {version}"
+
+    def test_extract_base_model_v2_no_suffix(self):
+        """Test that v2 format (without :0 suffix) is extracted correctly."""
+        model_id = "anthropic.claude-3-5-sonnet-20241022-v2"
+        base_model, version = service._extract_base_model(model_id)
+        assert base_model == "claude-3-5-sonnet", f"Expected claude-3-5-sonnet, got {base_model}"
+        assert version == "v2", f"Expected v2, got {version}"
