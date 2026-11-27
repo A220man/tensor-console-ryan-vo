@@ -38,9 +38,18 @@ class BedrockResolverService:
     @lru_cache(maxsize=256)
     def _extract_base_model(self, foundation_model_id: str) -> tuple[str, str | None]:
         """Extract base model name and version from foundation model ID.
-        
-        Returns (base_model, version) where version includes the full version suffix
-        e.g., "anthropic.claude-3-5-sonnet-20241022-v2:0" -> ("claude-3-5-sonnet", "v2:0")
+
+        Returns (base_model, version) where version includes the full version suffix.
+        Supported formats:
+        - v1:0, v2:0  (with colon-zero suffix)
+        - v1, v2      (without colon-zero suffix)
+
+        Examples:
+        - "anthropic.claude-3-5-sonnet-20241022-v2:0" -> ("claude-3-5-sonnet", "v2:0")
+        - "anthropic.claude-3-5-sonnet-20241022-v2"   -> ("claude-3-5-sonnet", "v2")
+        - "anthropic.claude-3-opus-20240229-v1:0"     -> ("claude-3-opus", "v1:0")
+        - "anthropic.claude-3-opus-20240229-v1"       -> ("claude-3-opus", "v1")
+        - "claude-3-5-sonnet"                         -> (base, None)
         """
         model_name = foundation_model_id
         version = None
